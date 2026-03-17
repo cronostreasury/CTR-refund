@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CTR · LP Tax Refund Claim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-deep: #050812;
+      --bg-card: #0a0e1a;
+      --bg-input: #111827;
+      --border: #1e293b;
+      --border-focus: #64ffda44;
+      --accent: #64ffda;
+      --accent-dim: #64ffda22;
+      --purple: #7c3aed;
+      --purple-dim: #7c3aed22;
+      --red: #ff6b6b;
+      --amber: #f59e0b;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #475569;
+      --text-dark: #334155;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Ambient Background ── */
+    .ambient {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 600px 400px at 20% 10%, #64ffda08 0%, transparent 70%),
+        radial-gradient(ellipse 500px 500px at 80% 80%, #7c3aed06 0%, transparent 70%),
+        radial-gradient(ellipse 800px 300px at 50% 50%, #64ffda03 0%, transparent 80%);
+    }
+
+    /* ── Grid Lines (subtle) ── */
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.03;
+      background-image:
+        linear-gradient(var(--accent) 1px, transparent 1px),
+        linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(5, 8, 18, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .header-inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; padding: 0 20px; gap: 12px;
+    }
+    .header-brand {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .header-logo {
+      width: 38px; height: 38px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+    }
+    .header-title {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px;
+      color: var(--text); white-space: nowrap;
+    }
+    .header-sub {
+      font-size: 10px; color: var(--text-muted);
+      letter-spacing: 0.08em; font-family: 'DM Mono', monospace;
+    }
+    .header-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--accent-dim); border: 1px solid var(--border-focus);
+      border-radius: 99px; padding: 5px 14px;
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent);
+    }
+
+    /* ── Main Container ── */
+    .main {
+      position: relative; z-index: 1;
+      max-width: 720px; margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center; margin-bottom: 48px;
+      animation: fadeUp 0.7s ease-out;
+    }
+    .hero-icon {
+      width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--accent-dim), var(--purple-dim));
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(24px, 5vw, 36px);
+      background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--text-dim); font-size: 15px; max-width: 520px; margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── Info Banner ── */
+    .info-banner {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px; margin-bottom: 32px;
+      display: flex; gap: 12px; align-items: flex-start;
+      animation: fadeUp 0.7s ease-out 0.1s both;
+    }
+    .info-banner-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .info-banner p { font-size: 13px; color: var(--text-dim); line-height: 1.65; }
+    .info-banner strong { color: var(--amber); font-weight: 600; }
+
+    /* ── Form Card ── */
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: fadeUp 0.7s ease-out 0.2s both;
+    }
+    .form-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .form-header h2 {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px;
+    }
+    .form-step-badge {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--text-muted); background: var(--bg-input);
+      border: 1px solid var(--border); border-radius: 99px; padding: 4px 12px;
+    }
+    .form-body { padding: 28px 24px 32px; }
+
+    /* ── Form Fields ── */
+    .field { margin-bottom: 22px; }
+    .field-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    @media (max-width: 520px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+
+    label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-dim); margin-bottom: 7px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      font-family: 'DM Mono', monospace;
+    }
+    label .required {
+      color: var(--red); margin-left: 2px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input::placeholder, textarea::placeholder {
+      color: var(--text-dark); font-family: 'DM Sans', sans-serif;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    select {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8'%3E%3Cpath d='M6 8.5L1 3.5h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+    select option { background: var(--bg-input); color: var(--text); }
+
+    textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+    .field-hint {
+      font-size: 11px; color: var(--text-dark); margin-top: 5px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px; background: var(--border); margin: 28px 0;
+    }
+
+    .section-label {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+      color: var(--accent); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label span { font-size: 16px; }
+
+    /* ── Checkbox ── */
+    .checkbox-field {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 20px; cursor: pointer;
+    }
+    .checkbox-field input[type="checkbox"] {
+      width: 18px; height: 18px; flex-shrink: 0;
+      accent-color: var(--accent); margin-top: 2px;
+      cursor: pointer;
+    }
+    .checkbox-field .cb-label {
+      font-size: 13px; color: var(--text-dim); line-height: 1.55;
+      font-family: 'DM Sans', sans-serif; text-transform: none;
+      letter-spacing: normal; font-weight: 400;
+    }
+
+    /* ── Submit Button ── */
+    .submit-btn {
+      width: 100%; padding: 16px 24px;
+      background: linear-gradient(135deg, var(--accent), #4fd1c5);
+      color: var(--bg-deep);
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 15px; letter-spacing: 0.06em;
+      border: none; border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.25s, opacity 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px var(--accent-dim);
+    }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+      box-shadow: none;
+    }
+    .submit-btn .shimmer {
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    /* ── Success State ── */
+    .success-card {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 32px; text-align: center;
+      animation: fadeUp 0.5s ease-out;
+    }
+    .success-card.show { display: block; }
+    .success-icon {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--accent-dim); border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; margin: 0 auto 20px;
+    }
+    .success-card h2 {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px;
+      color: var(--accent); margin-bottom: 12px;
+    }
+    .success-card p {
+      color: var(--text-dim); font-size: 14px; line-height: 1.7;
+      max-width: 400px; margin: 0 auto;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; padding: 24px 20px;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--text-dark);
+      position: relative; z-index: 1;
+    }
+    .footer a {
+      color: var(--text-muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer a:hover { color: var(--accent); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <div class="ambient"></div>
+  <div class="grid-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="https://cronostreasury.github.io" class="header-brand">
+        <img src="ctr_logo.png" alt="CTR Logo" class="header-logo" />
+        <div>
+          <div class="header-title">Cronos Treasury Reserve</div>
+          <div class="header-sub">LP TAX REFUND PORTAL</div>
+        </div>
+      </a>
+      <div class="header-badge">
+        <span style="font-size: 12px;">🏛️</span>
+        Refund Claims
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-icon">💸</div>
+      <h1>LP Position Tax Refund</h1>
+      <p>If you've paid LP position taxes while providing liquidity for CTR, you can submit a refund claim below. We review each case individually and process eligible refunds.</p>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <div class="info-banner-icon">ℹ️</div>
+      <p>
+        CTR applies a <strong>10% tax rate</strong> on trading volume to grow the treasury.
+        LP providers may have been subject to this tax on their positions.
+        Submit your details below and our team will verify your claim on-chain.
+      </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card" id="formCard">
+      <div class="form-header">
+        <h2>Submit Refund Claim</h2>
+        <div class="form-step-badge">All fields required</div>
+      </div>
+      <div class="form-body">
+
+        <!--
+          ╔══════════════════════════════════════════════════════════════╗
+          ║  FORMSPREE SETUP:                                          ║
+          ║  1. Go to https://formspree.io and create a free account   ║
+          ║  2. Create a new form — you'll get an ID like "xpzvqkdl"   ║
+          ║  3. Replace YOUR_FORM_ID below with your actual form ID    ║
+          ║                                                            ║
+          ║  Example: https://formspree.io/f/xpzvqkdl                  ║
+          ╚══════════════════════════════════════════════════════════════╝
+        -->
+        <form
+          id="refundForm"
+          action="https://formspree.io/f/YOUR_FORM_ID"
+          method="POST"
+        >
+          <!-- Hidden field for form identification -->
+          <input type="hidden" name="_subject" value="New CTR LP Tax Refund Claim" />
+          <input type="hidden" name="_template" value="table" />
+
+          <!-- Section: Personal Info -->
+          <div class="section-label"><span>👤</span> Your Information</div>
+
+          <div class="field-row field">
+            <div>
+              <label for="name">Name / Alias <span class="required">*</span></label>
+              <input type="text" id="name" name="name" placeholder="e.g. CryptoMax" required />
+            </div>
+            <div>
+              <label for="email">Contact Email <span class="required">*</span></label>
+              <input type="email" id="email" name="email" placeholder="your@email.com" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="telegram">Telegram / Discord <span style="color: var(--text-dark);">(optional)</span></label>
+            <input type="text" id="telegram" name="telegram_discord" placeholder="@username or User#1234" />
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section: Wallet & LP Details -->
+          <div class="section-label"><span>🔗</span> Wallet & LP Details</div>
+
+          <div class="field">
+            <label for="wallet">Cronos Wallet Address <span class="required">*</span></label>
+            <input type="text" id="wallet" name="wallet_address" placeholder="0x..." required
+                   pattern="^0x[a-fA-F0-9]{40}$" title="Enter a valid Cronos EVM address (0x...)" />
+            <div class="field-hint">Your Cronos EVM address that held the LP position</div>
+          </div>
+
+          <div class="field-row field">
+            <div>
+              <label for="lp_pair">LP Pair <span class="required">*</span></label>
+              <select id="lp_pair" name="lp_pair" required>
+                <option value="" disabled selected>Select LP pair</option>
+                <option value="CTR/CRO">CTR / CRO</option>
+                <option value="CTR/USDC">CTR / USDC</option>
+                <option value="CTR/WCRO">CTR / WCRO</option>
+                <option value="CTR/LCRO">CTR / LCRO</option>
+                <option value="other">Other (specify below)</option>
+              </select>
+            </div>
+            <div>
+              <label for="dex">DEX Used <span class="required">*</span></label>
+              <select id="dex" name="dex_platform" required>
+                <option value="" disabled selected>Select DEX</option>
+                <option value="Obsidian Finance">Obsidian Finance</option>
+                <option value="VVS Finance">VVS Finance</option>
+                <option value="MM Finance">MM Finance</option>
+                <option value="Ferro Protocol">Ferro Protocol</option>
+                <option value="other">Other (specify below)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row field">
+            <div>
+              <label for="tax_amount">Estimated Tax Paid (USD) <span class="required">*</span></label>
+              <input type="number" id="tax_amount" name="estimated_tax_usd" placeholder="0.00" step="0.01" min="0" required />
+            </div>
+            <div>
+              <label for="lp_date">Approximate LP Date <span class="required">*</span></label>
+              <input type="date" id="lp_date" name="lp_position_date" required />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Section: Transaction Proof -->
+          <div class="section-label"><span>📋</span> Transaction Details</div>
+
+          <div class="field">
+            <label for="tx_hash">Transaction Hash(es) <span class="required">*</span></label>
+            <textarea id="tx_hash" name="transaction_hashes" placeholder="Paste your transaction hash(es) here, one per line.&#10;e.g. 0xabc123..." required></textarea>
+            <div class="field-hint">Find these on <a href="https://explorer.cronos.org" target="_blank" rel="noopener" style="color: var(--purple); text-decoration: none;">Cronos Explorer ↗</a></div>
+          </div>
+
+          <div class="field">
+            <label for="notes">Additional Notes <span style="color: var(--text-dark);">(optional)</span></label>
+            <textarea id="notes" name="additional_notes" rows="3" placeholder="Any context that helps us verify your claim..."></textarea>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Confirmation -->
+          <label class="checkbox-field">
+            <input type="checkbox" id="confirm" required />
+            <span class="cb-label">
+              I confirm that the information provided is accurate and that I am the owner of the wallet address listed above.
+              I understand that all claims are verified on-chain before processing.
+            </span>
+          </label>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span class="shimmer"></span>
+            Submit Refund Claim
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Success Card -->
+    <div class="success-card" id="successCard">
+      <div class="success-icon">✅</div>
+      <h2>Claim Submitted!</h2>
+      <p>
+        Thank you — your LP tax refund claim has been received.
+        We'll verify the on-chain data and reach out to you within a few business days.
+      </p>
+      <br />
+      <a href="https://cronostreasury.github.io" style="color: var(--accent); font-family: 'DM Mono', monospace; font-size: 13px; text-decoration: none;">
+        ← Back to CTR Dashboard
+      </a>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    CTR · Cronos Treasury Reserve ·
+    <a href="https://explorer.cronos.org" target="_blank" rel="noopener noreferrer">Cronos Explorer ↗</a>
+    ·
+    <a href="https://x.com/CronosTreasury" target="_blank" rel="noopener noreferrer">Twitter/X ↗</a>
+  </footer>
+
+  <script>
+    const form = document.getElementById('refundForm');
+    const formCard = document.getElementById('formCard');
+    const successCard = document.getElementById('successCard');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Validate wallet format
+      const wallet = document.getElementById('wallet').value.trim();
+      if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+        alert('Please enter a valid Cronos EVM wallet address (0x followed by 40 hex characters).');
+        return;
+      }
+
+      // Disable button
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const formData = new FormData(form);
+
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (res.ok) {
+          formCard.style.display = 'none';
+          successCard.classList.add('show');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (err) {
+        alert('Something went wrong. Please try again or contact us on Telegram/Discord.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Refund Claim';
+      }
+    });
+  </script>
+</body>
+</html>
